@@ -7,7 +7,7 @@ Created on Jan 28, 2018
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
-import requests, lxml.html,telnetlib
+import requests, lxml.html,telnetlib,redis
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -96,27 +96,34 @@ def parse_func_1(page_source):
     del result[0]
     return result
 
-def verify_ip_status(ip_list):
-        ip_http = []
-        ip_https = []
-        if isinstance(ip_list,list) and ip_list:
-            for ip in ip_list:
-                try:
-                    proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
-                    telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
-                    proxy = {"http":proxy_convert,"https":proxy_convert}
-                    r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
-                    try:
-                        r = requests.get("https://www.baidu.com", timeout=10, proxies=proxy)
-                        ip_http.append(proxy_convert)
-                    except:
-                        continue
-                    ip_https.append(proxy_convert)
-                except:
-                    continue
+def verify_ip_status(ip):
+        if isinstance(ip,list) and ip:
+            proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
+            telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
+            proxy = {"http":proxy_convert,"https":proxy_convert}
+            r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
+            try:
+                r = requests.get("https://www.baidu.com", timeout=10, proxies=proxy)
+                return "HTTPS:%s" % proxy_convert
+            except:
+                return "HTTP:%s" % proxy_convert
         else:
-            print "[ERROR]Params %s is not a list or is null..."%(ip_list)
-        return ip_http,ip_https
+            print "[ERROR]Params %s is not a list or is null..."%(ip)
+            return None
+
+def store_proxy(proxy,redis_conn):
+    if isinstance(proxy,str) and proxy:
+        r = redis_conn
+        if not r.exists(proxy):
+            r.set(proxy,1)
+            print "%s store in redis successfully..."
+    else:
+        print "[ERROR]Params %s is not a list or is null..."%(proxy)
+
+def clear_ip(type="HTTP"):
+    pass
+
+
 
 
 if __name__ == "__main__":
