@@ -7,7 +7,7 @@ Created on Jan 28, 2018
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
-import requests, lxml.html
+import requests, lxml.html,telnetlib
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -96,10 +96,34 @@ def parse_func_1(page_source):
     del result[0]
     return result
 
+def verify_ip_status(ip_list):
+        ip_http = []
+        ip_https = []
+        if isinstance(ip_list,list) and ip_list:
+            for ip in ip_list:
+                try:
+                    proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
+                    telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
+                    proxy = {"http":proxy_convert,"https":proxy_convert}
+                    r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
+                    try:
+                        r = requests.get("https://www.baidu.com", timeout=10, proxies=proxy)
+                        ip_http.append(proxy_convert)
+                    except:
+                        continue
+                    ip_https.append(proxy_convert)
+                except:
+                    continue
+        else:
+            print "[ERROR]Params %s is not a list or is null..."%(ip_list)
+        return ip_http,ip_https
+
 
 if __name__ == "__main__":
     #tmp = Base()
-    Base.get_dynamic_source("http://www.xicidaili.com/nt/", parse_func_1)
+    ip_list = Base.get_dynamic_source("http://www.xicidaili.com/nt/", parse_func_1)
+    ip1,ip2 = verify_ip_status(ip_list)
+    print ip1,ip2
     # tmp.get_source("http://www.xicidaili.com/wt/2")
     # page_source = ""
     # with open("a.txt", "r") as fp:
