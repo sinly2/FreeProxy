@@ -99,9 +99,9 @@ def parse_func_1(page_source):
 def verify_ip_status(ip):
         if isinstance(ip,list) and ip:
             proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
-            telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
             proxy = {"http":proxy_convert,"https":proxy_convert}
             try:
+                telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
                 r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
             except:
                 return None
