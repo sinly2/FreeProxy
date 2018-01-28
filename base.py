@@ -101,7 +101,10 @@ def verify_ip_status(ip):
             proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
             telnetlib.Telnet(ip[0], port=str(ip[1]), timeout=10)
             proxy = {"http":proxy_convert,"https":proxy_convert}
-            r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
+            try:
+                r = requests.get("http://weixin.sogou.com/", timeout=10, proxies=proxy)
+            except:
+                return None
             try:
                 r = requests.get("https://www.baidu.com", timeout=10, proxies=proxy)
                 return "HTTPS:%s" % proxy_convert
