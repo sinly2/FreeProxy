@@ -68,8 +68,8 @@ class ProxyClearProduct(threading.Thread):
 
 
 class ProxyClear(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self,queue_to_clear)
+    def __init__(self,queue_to_clear):
+        threading.Thread.__init__(self)
         self.redis_conn = redis.Redis(host="127.0.0.1", db=0)
         self.data = queue_to_clear
         self.time_delay = 2

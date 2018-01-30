@@ -120,7 +120,7 @@ def store_proxy(proxy,redis_conn):
         r = redis_conn
         if not r.exists(proxy):
             r.set(proxy,1)
-            print "%s store in redis successfully..."
+            print "%s store in redis successfully..." % (proxy)
     else:
         print "[ERROR]Params %s is not a list or is null..." %(proxy)
 
