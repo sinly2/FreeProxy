@@ -114,6 +114,7 @@ def verify_ip_status(ip):
             print "[ERROR]Params %s is not a list or is null..."%(ip)
             return None
 
+
 def store_proxy(proxy,redis_conn):
     if isinstance(proxy,str) and proxy:
         r = redis_conn
@@ -121,10 +122,16 @@ def store_proxy(proxy,redis_conn):
             r.set(proxy,1)
             print "%s store in redis successfully..."
     else:
-        print "[ERROR]Params %s is not a list or is null..."%(proxy)
+        print "[ERROR]Params %s is not a list or is null..." %(proxy)
 
-def clear_ip(type="HTTP"):
-    pass
+
+def clear_ip(proxy, redis_conn):
+    item = proxy.split(":")
+    del item[0]
+    if item:
+        if verify_ip_status(item):
+            print "[INFO]Proxy %s will be cleared..." % (proxy)
+            redis_conn.delete(proxy)
 
 
 
