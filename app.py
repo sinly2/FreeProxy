@@ -4,7 +4,7 @@ Created on Apr 7, 2018
 
 @author: guxiwen
 """
-from flask import Flask, request
+from flask import Flask, request, request_finished
 import redis, sqlite3
 app = Flask(__name__)
 REDIS_POOL = None
@@ -13,12 +13,7 @@ REDIS_POOL = None
 @app.route("/getProxy")
 def get_proxy():
     redis_conn = get_db("redis")
-    sqlite_conn = get_db("sqlite")
     result = redis_conn.randomkey()
-    ip = request.remote_addr
-    sql = 'insert into visit_log (ip,uri,create_time) values ("%s","%s","%s")' % (ip, "/getProxy", "")
-    sqlite_conn.execute(sql)
-    sqlite_conn.commit()
     return result
 
 
@@ -40,5 +35,13 @@ def get_redis_pool():
     return REDIS_POOL
 
 
+@request_finished.connect_via(app)
+def save_visit_log(sender, **extra):
+    sqlite_conn = get_db("sqlite")
+    ip = request.remote_addr
+    sql = 'insert into visit_log (ip,uri,create_time) values ("%s","%s","%s")' % (ip, "/getProxy", "")
+    sqlite_conn.execute(sql)
+    sqlite_conn.commit()
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1",port=50000,debug=True)
+    app.run(host="172.19.88.118",port=50000,debug=True)
