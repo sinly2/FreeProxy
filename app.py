@@ -35,13 +35,15 @@ def get_redis_pool():
     return REDIS_POOL
 
 
-@request_finished.connect_via(app)
 def save_visit_log(sender, **extra):
     sqlite_conn = get_db("sqlite")
     ip = request.remote_addr
     sql = 'insert into visit_log (ip,uri,create_time) values ("%s","%s","%s")' % (ip, "/getProxy", "")
     sqlite_conn.execute(sql)
     sqlite_conn.commit()
+
+
+request_finished.connect(save_visit_log, app)
 
 if __name__ == "__main__":
     app.run(host="172.19.88.118",port=50000,debug=True)
