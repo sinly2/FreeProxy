@@ -16,7 +16,7 @@ def get_proxy():
     sqlite_conn = get_db("sqlite")
     result = redis_conn.randomkey()
     ip = request.remote_addr
-    sql = "insert into visit_log (ip,uri,create_time) values (%s,%s,%s)" % (ip, "/getProxy", "")
+    sql = 'insert into visit_log (ip,uri,create_time) values ("%s","%s","%s")' % (ip, "/getProxy", "")
     sqlite_conn.execute(sql)
     sqlite_conn.commit()
     return result
