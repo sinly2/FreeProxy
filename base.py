@@ -109,7 +109,7 @@ def parse_func_1(page_source):
 
 
 def verify_ip_status(ip, dic_url):
-    dic_url = {"item":"taobao","url":"https://www.taobao.com/"}
+    dic_url = {"item":"taobao","url":"https://www.jqian.com/hehuoren-350449.html"}
     timeout = 3
     if isinstance(ip,list) and ip:
         proxy_convert = "%s:%s"%(ip[0],str(ip[1]))
